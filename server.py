@@ -4,13 +4,9 @@ from pyramid.response import Response
 
 import scrypt
 
-def hello_world(request):
-    return Response('Hello %(name)s!' % request.matchdict)
-
-
 def do_scrypt(request):
     stretched_input = bytes(request.matchdict.get('stretched_input', ''))
-    salt = 'salt'
+    salt = b"identity.mozilla.com/picl/v1/scrypt"
     key = scrypt.hash(stretched_input, salt, N=64*1024, r=8, p=1,
                       buflen=1*32)
     return Response(key)
