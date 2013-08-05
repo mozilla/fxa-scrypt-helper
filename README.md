@@ -26,4 +26,4 @@ Then pick an input string and browse to http://localhost:8080/your-input-string 
     * buflen = 32
 
 ## TODO
-Everything. Initially, determine whether the input should be moved out of the URL. Parameterize the salt. Write setup.py to handle scrypt and Pyramid installation.
+Everything. Initially, determine whether the input should be moved out of the URL. Write setup.py to handle scrypt and Pyramid installation.
