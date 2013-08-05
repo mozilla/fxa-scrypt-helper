@@ -19,7 +19,7 @@ You'll need to grab the Python scrypt library version 0.6.1 or better from [PyPI
 
 Then pick an input string and browse to http://localhost:8080/your-input-string . The resulting web page should consist of illegible but correct output from scrypt run with:
 
-    * salt = 'salt'
+    * salt = "identity.mozilla.com/picl/v1/scrypt"
     * N = 64*1024
     * r=8
     * p=1
