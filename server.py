@@ -4,35 +4,37 @@ from pyramid.response import Response
 
 import scrypt
 
+REQUIRED_PARAMETERS = {
+    'salt': b'identity.mozilla.com/picl/v1/scrypt',
+    'N': 65536, # aka 'n'
+    'r': 8,
+    'p': 1,
+    'buflen': 32}
 
-def validate_parameters(request):
+
+def validate_parameters(input_dict):
     '''
     Enforce restrictions on the scrypt parameters.
     '''
-    valid = {'salt': b'identity.mozilla.com/picl/v1/scrypt',
-             'N': 65536, # aka 'n'
-             'r': 8,
-             'p': 1,
-             'buflen': 32}
-    for parameter in valid:
+    for parameter in REQUIRED_PARAMETERS:
         typecaster = bytes if parameter == 'salt' else int
-        input = request.params.get(parameter)
+        input = input_dict.get(parameter)
         if input is None:
             if parameter == 'N':
-                input = request.params.get('n')
+                input = input_dict.get('n')
             if input is None:
                 return (False, 'Missing Scrypt parameter "%s"' % parameter)
         try:
-            assert typecaster(input) == valid[parameter]
+            assert typecaster(input) == REQUIRED_PARAMETERS[parameter]
         except Exception:
             msg = 'Bad value "%s" for Scrypt parameter "%s"'
             return (False, msg % (input, parameter))
-    return (True, valid)
+    return (True, REQUIRED_PARAMETERS)
     
 
 def do_scrypt(request):
     stretched_input = bytes(request.matchdict.get('stretched_input', ''))
-    valid, parameters = validate_parameters(request)
+    valid, parameters = validate_parameters(request.params)
     if not valid:
         response = Response(parameters) # an error message
         response.status = 400
