@@ -1,4 +1,4 @@
-# PiCL Scrypt Helper Service
+# Scrypt Helper Service
 
 A hello-world level implementation of a web service that implements the [scrypt key derivation function] [scrypt] .
 
@@ -13,7 +13,7 @@ You'll need to grab the Python scrypt library version 0.6.1 or better from [PyPI
 
 ## Running
 
-    $ cd picl-spec-crypto
+    $ cd scrypt-helper
     $ python server.py
     
 
