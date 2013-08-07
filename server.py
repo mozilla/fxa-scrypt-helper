@@ -24,10 +24,11 @@ def validate_parameters(input_dict):
         typecaster = bytes if parameter == 'salt' else int
         if parameter not in input_dict:
             raise ValueError("Missing scrypt parameter '%s'" % parameter)
-        if typecaster(input_dict[parameter]) != \
-          REQUIRED_PARAMETERS[parameter]:
+        value = typecaster(input_dict[parameter])
+        if value != REQUIRED_PARAMETERS[parameter]:
             raise ValueError("Parameter %s must be %s, not '%s'" % (
-                parameter, REQUIRED_PARAMETERS[parameter], input_dict[parameter]))
+                parameter, REQUIRED_PARAMETERS[parameter],
+                input_dict[parameter]))
     return REQUIRED_PARAMETERS
 
 
