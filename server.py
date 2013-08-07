@@ -6,41 +6,42 @@ import scrypt
 
 REQUIRED_PARAMETERS = {
     'salt': b'identity.mozilla.com/picl/v1/scrypt',
-    'N': 65536, # aka 'n'
+    'N': 65536,
     'r': 8,
     'p': 1,
-    'buflen': 32}
+    'buflen': 1*32}
 
 
 def validate_parameters(input_dict):
     '''
     Enforce restrictions on the scrypt parameters.
+
+    Note that we intentionally insist that exactly one set of parameters
+    be passed in. This choice allows us a flexible API, with an initially
+    inflexible policy that can be loosened in the future.
     '''
     for parameter in REQUIRED_PARAMETERS:
         typecaster = bytes if parameter == 'salt' else int
-        input = input_dict.get(parameter)
-        if input is None:
-            if parameter == 'N':
-                input = input_dict.get('n')
-            if input is None:
-                return (False, 'Missing Scrypt parameter "%s"' % parameter)
-        try:
-            assert typecaster(input) == REQUIRED_PARAMETERS[parameter]
-        except Exception:
-            msg = 'Bad value "%s" for Scrypt parameter "%s"'
-            return (False, msg % (input, parameter))
-    return (True, REQUIRED_PARAMETERS)
-    
+        if parameter not in input_dict:
+            raise ValueError("Missing scrypt parameter '%s'" % parameter)
+        if typecaster(input_dict[parameter]) != \
+          REQUIRED_PARAMETERS[parameter]:
+            raise ValueError("Parameter %s must be %s, not '%s'" % (
+                parameter, REQUIRED_PARAMETERS[parameter], input_dict[parameter]))
+    return REQUIRED_PARAMETERS
+
 
 def do_scrypt(request):
     stretched_input = bytes(request.matchdict.get('stretched_input', ''))
-    valid, parameters = validate_parameters(request.params)
-    if not valid:
-        response = Response(parameters) # an error message
+    try:
+        parameters = validate_parameters(request.params)
+    except ValueError, e:
+        response = Response(str(e))
         response.status = 400
         return response
-    key = scrypt.hash(stretched_input, **parameters)
-    return Response(key)
+    else:
+        key = scrypt.hash(stretched_input, **parameters)
+        return Response(key)
 
 
 if __name__ == '__main__':
