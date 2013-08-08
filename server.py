@@ -1,6 +1,7 @@
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
+import binascii, json
 
 import scrypt
 
@@ -33,16 +34,23 @@ def validate_parameters(input_dict):
 
 
 def do_scrypt(request):
-    stretched_input = bytes(request.matchdict.get('stretched_input', ''))
     try:
-        parameters = validate_parameters(request.params)
+        body = json.loads(request.POST)
+        hexlified_password = bytes(body.get('password', ''))
+        password = binascii.unhexlify(hexlified_password)
+        if len(password) < 1 or len(password) > 256:
+            msg = 'Password "%s" must be between 1 and 256 bytes'
+            raise ValueError(msg % password)
+        del body['password']
+        parameters = validate_parameters(body)
     except ValueError, e:
         response = Response(str(e))
         response.status = 400
         return response
     else:
-        key = scrypt.hash(stretched_input, **parameters)
-        return Response(key)
+        key = scrypt.hash(password, **parameters)
+        output = binascii.hexlify(key)
+        return Response(json.dumps({'output': output}))
 
 
 if __name__ == '__main__':
