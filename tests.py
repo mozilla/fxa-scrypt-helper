@@ -35,7 +35,7 @@ class TestInputValidation(unittest.TestCase):
             "r": 8,
             "p": 1,
             "buflen": 32,
-            "password": "f84913e3d8e6d624689d0a3e9678ac8dcc79d2c2f3d9641488cd9d6ef6cd83dd"
+            "input": "f84913e3d8e6d624689d0a3e9678ac8dcc79d2c2f3d9641488cd9d6ef6cd83dd"
 }
         body = json.dumps(request_body)
         request = testing.DummyRequest(post=body)

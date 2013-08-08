@@ -36,12 +36,12 @@ def validate_parameters(input_dict):
 def do_scrypt(request):
     try:
         body = json.loads(request.POST)
-        hexlified_password = bytes(body.get('password', ''))
+        hexlified_password = bytes(body.get('input', ''))
         password = binascii.unhexlify(hexlified_password)
         if len(password) < 1 or len(password) > 256:
             msg = 'Password "%s" must be between 1 and 256 bytes'
             raise ValueError(msg % password)
-        del body['password']
+        del body['input']
         parameters = validate_parameters(body)
     except ValueError, e:
         response = Response(str(e))

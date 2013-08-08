@@ -20,7 +20,7 @@ You'll need to grab the Python scrypt library version 0.6.1 or better from [PyPI
 Then make an http POST with a JSON body of the form:
 
     '{
-     "password": <your password to scrypt>,
+     "input": <your password to scrypt, in hex>,
      "salt": "identity.mozilla.com/picl/v1/scrypt",
      "N": 65536,
      "r": 8,
@@ -34,7 +34,7 @@ to:
 
 which will return:
 
-    {"output": "return-value-from-scrypt-algorithm"}
+    {"output": "return-value-from-scrypt-algorithm, also in hex"}
 
 (Note that all of the inputs to scrypt except the password are hard-coded; you must modify validate_parameters in server.py if you wish to change any of them.)
 
