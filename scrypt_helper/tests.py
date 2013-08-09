@@ -2,7 +2,7 @@ import json, unittest
 
 from pyramid import testing
 
-import server as S
+import scrypt_helper as S
 
 
 class TestInputValidation(unittest.TestCase):
