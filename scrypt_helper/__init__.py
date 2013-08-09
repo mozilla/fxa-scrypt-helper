@@ -52,8 +52,15 @@ def do_scrypt(request):
         return Response(json.dumps({'output': output}))
 
 
+def do_healthcheck(request):
+    """A simple healthcheck route.  Just returns 'OK'."""
+    return Response("OK")
+
+
 def make_wsgi_app():
     config = Configurator()
-    config.add_route('do_scrypt', '/')
+    config.add_route('do_scrypt', '/', request_method='POST')
+    config.add_route('do_healthcheck', '/', request_method='GET')
     config.add_view(do_scrypt, route_name='do_scrypt')
+    config.add_view(do_healthcheck, route_name='do_healthcheck')
     return config.make_wsgi_app()

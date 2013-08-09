@@ -1,6 +1,11 @@
-import json, unittest
+import json
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from pyramid import testing
+from webtest import TestApp
 
 import scrypt_helper as S
 
@@ -46,6 +51,15 @@ class TestInputValidation(unittest.TestCase):
             result.get('output'),
             "5b82f146a64126923e4167a0350bb181feba61f63cb1714012b19cb0be0119c5")
 
+
+class TestRequestRouting(unittest.TestCase):
+
+    def setUp(self):
+        self.app = TestApp(S.make_wsgi_app())
+
+    def test_healthcheck_url(self):
+        r = self.app.get("/")
+        self.assertEqual(r.body, "OK")
 
 
 if __name__ == '__main__':
