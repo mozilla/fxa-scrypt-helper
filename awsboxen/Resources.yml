@@ -1,0 +1,83 @@
+
+# A single public-facing loadbalancer, that fronts all the webheads.
+
+WebLoadBalancer:
+  Type: AWS::ElasticLoadBalancing::LoadBalancer
+  Properties:
+    AvailabilityZones: {"Fn::GetAZs": ""}
+    Listeners:
+      # XXX TODO: ssl certificates and what-not.
+      - LoadBalancerPort: "80"
+        InstancePort: "80"
+        Protocol: HTTP
+    HealthCheck:
+      Target: "HTTP:80/"
+      HealthyThreshold: "2"
+      UnhealthyThreshold: "5"
+      Interval: "10"
+      Timeout: "5"
+
+# An auto-scale group for bringing up webheads.
+# Currently this just maintains a fixed number of machines, which
+# you can adjust with the ClusterSize deployment parameter.
+#
+# We could try to be clever with scaling up/down in the future.
+
+WebAutoScaleGroup:
+  Type: AWS::AutoScaling::AutoScalingGroup
+  Properties:
+    AvailabilityZones: {"Fn::GetAZs": ""}
+    LaunchConfigurationName: {"Ref": "WebLaunchConfig"}
+    DesiredCapacity: {"Ref": "ClusterSize"}
+    MinSize: {"Ref": "ClusterSize"}
+    MaxSize: {"Ref": "ClusterSize"}
+    LoadBalancerNames:
+      - {"Ref": "WebLoadBalancer"}
+
+WebLaunchConfig:
+  Type: AWS::AutoScaling::LaunchConfiguration
+  Properties:
+    InstanceType: m1.small
+    ImageId: {"Ref": "WebServerAMI"}  # this comes from Boxen[WebServer]
+    KeyName: {"Ref": "AWSBoxDeployKey"}
+    SecurityGroups:
+      - {"Ref": "WebSecurityGroup"}
+
+WebSecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription:  awsboxen security group for scrypt-helper webheads
+    SecurityGroupIngress:
+      # Allow ssh from anywhere
+      - IpProtocol: "tcp"
+        FromPort: "22"
+        ToPort: "22"
+        CidrIp: "0.0.0.0/0"
+
+WebSecurityGroupLBIngress:
+  # Allow port 80 ingress from the load balancer.
+  # This has to be a separate resources to avoid circular references
+  # between the LoadBalancer and the LaunchConfig.
+  Type: AWS::EC2::SecurityGroupIngress
+  Properties:
+    GroupName: {"Ref": "WebSecurityGroup"}
+    IpProtocol: "tcp"
+    FromPort: "80"
+    ToPort: "80"
+    SourceSecurityGroupOwnerId: {"Fn::GetAtt": ["WebLoadBalancer", "SourceSecurityGroup.OwnerAlias"]}
+    SourceSecurityGroupName: {"Fn::GetAtt": ["WebLoadBalancer", "SourceSecurityGroup.GroupName"]}
+
+
+# DNS Records to point the public at the load-balancer.
+
+DNSRecords:
+  Type: AWS::Route53::RecordSetGroup
+  Properties:
+    Comment: awsboxen dns records for scrypt-helper
+    HostedZoneName: lcip.org.
+    RecordSets:
+      - Name: {"Fn::Join": ["", ["scrypt.",{"Ref": "DNSPrefix"},".lcip.org."]]}
+        Type: "CNAME"
+        TTL: 30
+        ResourceRecords:
+          - {"Fn::GetAtt": ["WebLoadBalancer", "DNSName"]}
