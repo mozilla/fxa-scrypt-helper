@@ -35,7 +35,12 @@ def validate_parameters(input_dict):
 
 def do_scrypt(request):
     try:
-        body = json.loads(request.POST)
+        try:
+            body = json.loads(request.POST)
+        except TypeError:
+            msg = "Please submit scrypt parameters as JSON "\
+              "in body of an http POST"
+            raise ValueError(msg)
         hexlified_password = bytes(body.get('input', ''))
         password = binascii.unhexlify(hexlified_password)
         if len(password) < 1 or len(password) > 256:
@@ -55,7 +60,7 @@ def do_scrypt(request):
 
 if __name__ == '__main__':
     config = Configurator()
-    config.add_route('do_scrypt', '/{stretched_input}')
+    config.add_route('do_scrypt', '/')
     config.add_view(do_scrypt, route_name='do_scrypt')
     app = config.make_wsgi_app()
     server = make_server('0.0.0.0', 8080, app)
