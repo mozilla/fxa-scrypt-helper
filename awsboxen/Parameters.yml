@@ -1,0 +1,9 @@
+ClusterSize:
+  Default: "2"
+  Type: "String"
+  Description: "Number of nodes in the auto-scale cluster"
+DNSPrefix:
+  Default: "dev"
+  Type: "String"
+  Description: "prefix for dns name, to avoid conflicts"
+

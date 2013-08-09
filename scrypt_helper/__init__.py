@@ -1,4 +1,3 @@
-from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
 import binascii, json
@@ -58,10 +57,15 @@ def do_scrypt(request):
         return Response(json.dumps({'output': output}))
 
 
-if __name__ == '__main__':
+def do_healthcheck(request):
+    """A simple healthcheck route.  Just returns 'OK'."""
+    return Response("OK")
+
+
+def make_wsgi_app():
     config = Configurator()
-    config.add_route('do_scrypt', '/')
+    config.add_route('do_scrypt', '/', request_method='POST')
+    config.add_route('do_healthcheck', '/', request_method='GET')
     config.add_view(do_scrypt, route_name='do_scrypt')
-    app = config.make_wsgi_app()
-    server = make_server('0.0.0.0', 8080, app)
-    server.serve_forever()
+    config.add_view(do_healthcheck, route_name='do_healthcheck')
+    return config.make_wsgi_app()
