@@ -40,6 +40,33 @@ which will return:
 
 (Note that all of the inputs to scrypt except the password are hard-coded; you must modify validate_parameters in server.py if you wish to change any of them.)
 
+
+## Dev Deployment
+
+There is a development instance of this service running in the moz-svc-dev
+AWS environment, and available for testing at:
+
+    http://scrypt.dev.lcip.org
+
+This deployment is managed using [awsboxen].  To push a new version of the
+code, simply do:
+
+    $> awsboxen deploy scrypt-dev-lcip-org
+
+You can also use awsboxen to spin up a private server stack; just make sure
+to set the DNSPrefix deploy parameter so that it doesn't conflict with the
+default deployment.  For example:
+
+    $> awsboxen deploy --define=DNSPrefix=loadtest,ClusterSize=5 scrypt-loadtest-lcip-org
+
+When you're finished with it, tear down the stack like so:
+
+    $> awsboxen teardown scrypt-loadtest-lcip-org
+
+
+[awsboxen]: https://github.com/mozilla/awsboxen/
+
 ## TODO
 
 Nothing!  Hmm, maybe not...
+
