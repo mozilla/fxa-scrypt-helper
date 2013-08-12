@@ -33,6 +33,10 @@ WebAutoScaleGroup:
     MaxSize: {"Ref": "ClusterSize"}
     LoadBalancerNames:
       - {"Ref": "WebLoadBalancer"}
+  UpdatePolicy:
+    AutoScalingRollingUpdate:
+      MinInstancesInService: "1"
+      MaxBatchSize: "1"
 
 WebLaunchConfig:
   Type: AWS::AutoScaling::LaunchConfiguration
