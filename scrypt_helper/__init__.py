@@ -35,7 +35,7 @@ def validate_parameters(input_dict):
 def do_scrypt(request):
     try:
         try:
-            body = json.loads(request.POST)
+            body = json.loads(request.body, encoding=request.charset)
         except TypeError:
             msg = "Please submit scrypt parameters as JSON "\
               "in body of an http POST"
