@@ -1,4 +1,4 @@
-This directory specifies how to deploy server-storage into AWS.
+This directory specifies how to deploy scrypt-helper into AWS.
 You'll need "awsboxen" to interpret and act on these instructions.
 
   https://github.com/mozilla/awsboxen
