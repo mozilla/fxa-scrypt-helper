@@ -41,7 +41,7 @@ WebAutoScaleGroup:
 WebLaunchConfig:
   Type: AWS::AutoScaling::LaunchConfiguration
   Properties:
-    InstanceType: m1.small
+    InstanceType: m1.large
     ImageId: {"Ref": "WebServerAMI"}  # this comes from Boxen[WebServer]
     KeyName: {"Ref": "AWSBoxDeployKey"}
     SecurityGroups:
