@@ -41,7 +41,10 @@ def do_scrypt(request):
               "in body of an http POST"
             raise ValueError(msg)
         hexlified_password = bytes(body.get('input', ''))
-        password = binascii.unhexlify(hexlified_password)
+        try:
+            password = binascii.unhexlify(hexlified_password)
+        except TypeError:
+            raise ValueError("Invalid hex encoding of password")
         if len(password) < 1 or len(password) > 256:
             msg = 'Password "%s" must be between 1 and 256 bytes'
             raise ValueError(msg % password)
