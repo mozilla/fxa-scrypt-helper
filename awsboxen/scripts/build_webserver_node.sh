@@ -19,9 +19,7 @@ cat *.pub >> /home/ec2-user/.ssh/authorized_keys
 cd ..
 rm -rf identity-pubkeys
 
-# Checkout and build latest scrypt-helper
-# XXX TODO: technically, we should build the currently-check-out version.
-# AWSBoxen needs to learn how to pass the commit ref into this script.
+# Checkout and build the active commit of scrypt-helper.
 
 python-pip install virtualenv
 
@@ -32,9 +30,7 @@ UDO="sudo -u scrypthelper"
 cd /home/scrypthelper
 $UDO git clone https://github.com/mozilla/scrypt-helper.git
 cd ./scrypt-helper
-if [ ! -f setup.py ]; then
-  git checkout aws-deployment
-fi
+git checkout {"Ref": "AWSBoxenCommit"}
 
 # Build a virtualenv with all the dependencies.
 
