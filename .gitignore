@@ -4,3 +4,6 @@
 *.egg-info
 dist
 build
+loadtest/bin
+loadtest/lib
+loadtest/include
