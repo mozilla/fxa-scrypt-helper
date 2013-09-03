@@ -54,7 +54,9 @@ def do_scrypt(request):
     else:
         key = scrypt.hash(password, **parameters)
         output = binascii.hexlify(key)
-        return Response(json.dumps({'output': output}))
+        response = Response(json.dumps({'output': output}))
+        response.content_type = "application/json"
+        return response
 
 
 def do_healthcheck(request):
