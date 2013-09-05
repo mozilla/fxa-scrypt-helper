@@ -1,8 +1,9 @@
 # Scrypt Helper Service
 
-A hello-world level implementation of a web service that implements the [scrypt key derivation function] [scrypt] .
+A web service that provides the [scrypt key derivation function] [scrypt] for future [Firefox Services] [services].
 
 [scrypt]: http://en.wikipedia.org/wiki/Scrypt
+[services]: https://services.mozilla.com/
 
 ## Installation
 
@@ -65,8 +66,3 @@ When you're finished with it, tear down the stack like so:
 
 
 [awsboxen]: https://github.com/mozilla/awsboxen/
-
-## TODO
-
-Nothing!  Hmm, maybe not...
-
