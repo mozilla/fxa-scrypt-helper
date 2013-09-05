@@ -6,10 +6,14 @@ WebLoadBalancer:
   Properties:
     AvailabilityZones: {"Fn::GetAZs": ""}
     Listeners:
-      # XXX TODO: ssl certificates and what-not.
       - LoadBalancerPort: "80"
         InstancePort: "80"
         Protocol: HTTP
+      - LoadBalancerPort: "443"
+        InstancePort: "80"
+        Protocol: "HTTPS"
+        InstanceProtocol: "HTTP"
+        SSLCertificateId: "arn:aws:iam::142069644989:server-certificate/identity/wildcard.dev.lcip.org"
     HealthCheck:
       Target: "HTTP:80/"
       HealthyThreshold: "2"
