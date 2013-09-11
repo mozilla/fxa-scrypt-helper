@@ -7,3 +7,4 @@ build
 loadtest/bin
 loadtest/lib
 loadtest/include
+loadtest/local
