@@ -11,5 +11,3 @@ To run them, do the following:
   $> make bench     # runs a much longer higher-concurrency test.
 
 
-It should also be possible to submit this tessuite to a loads cluster broker,
-to be run in a distriuted fashion.  We're working on the details of that...
