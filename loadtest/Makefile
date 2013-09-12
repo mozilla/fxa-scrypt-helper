@@ -1,6 +1,6 @@
 .PHONY: build test bench
 
-# Built virtualenv, to ensure we have all the dependencies.
+# Build virtualenv, to ensure we have all the dependencies.
 build:
 	virtualenv --no-site-packages .
 	./bin/pip install cython
