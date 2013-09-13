@@ -37,7 +37,7 @@ else:
 
 class StressTest(TestCase):
 
-    server_url = "http://scrypt.dev.lcip.org"
+    server_url = "http://scrypt.loadtest.lcip.org"
 
     def test_scrypt_helper(self):
         # Randomly decide to send a good payload, a known
