@@ -6,4 +6,7 @@ DNSPrefix:
   Default: "dev"
   Type: "String"
   Description: "prefix for dns name, to avoid conflicts"
-
+AMQPPassword:
+  Default: "guest"
+  Type: "String"
+  Description: "password for AMQP log-aggregation endpoint"
