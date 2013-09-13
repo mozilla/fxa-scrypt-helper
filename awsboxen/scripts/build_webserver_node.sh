@@ -49,11 +49,15 @@ working_dir=/home/scrypthelper/scrypt-helper
 cmd=local/bin/gunicorn -w 4 scrypt_helper.run
 numprocesses = 1
 stdout_stream.class = FileStream
-stdout_stream.filename = /home/scrypthelper/circus.log
+stdout_stream.filename = /home/scrypthelper/circus.stdout.log
 stdout_stream.refresh_time = 0.5
 stdout_stream.max_bytes = 1073741824
 stdout_stream.backup_count = 3
-stderr_stream.class = StdoutStream
+stderr_stream.class = FileStream
+stderr_stream.filename = /home/scrypthelper/circus.stderr.log
+stderr_stream.refresh_time = 0.5
+stderr_stream.max_bytes = 1073741824
+stderr_stream.backup_count = 3
 EOF
 chown scrypthelper:scrypthelper circus.ini
 
