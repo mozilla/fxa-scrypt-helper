@@ -18,7 +18,7 @@ You'll need to grab the Python scrypt library version 0.6.1 or better from [PyPI
 
 Run a simple testing server like so:
 
-    $ python ./script_helper/run.py
+    $ python ./scrypt_helper/run.py
 
 Then make an http POST with a JSON body of the form:
 
