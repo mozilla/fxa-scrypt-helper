@@ -9,7 +9,7 @@ A web service that provides the [scrypt key derivation function] [scrypt] for fu
 
 * Python 2.7 or better, but not Python 3.x
 * `pip`
-* An OpenSSL development package (e.g., `openssl-dev` on Linux, `brew install openssl` on Mac OS X).
+* An OpenSSL development package (e.g., `libssl-dev` on Ubuntu/Debian, `openssl-devel` on Red Hat, `brew install openssl` on Mac OS X).
 
 ## Installation
 
