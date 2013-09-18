@@ -5,22 +5,29 @@ A web service that provides the [scrypt key derivation function] [scrypt] for fu
 [scrypt]: http://en.wikipedia.org/wiki/Scrypt
 [services]: https://services.mozilla.com/
 
+## Prerequisites
+
+* Python 2.7 or better, but not Python 3.x
+* `pip`
+* An OpenSSL development package (e.g., `openssl-dev` on Linux, `brew install openssl` on Mac OS X).
+
 ## Installation
 
-You'll need to grab the Python scrypt library version 0.6.1 or better from [PyPI] [pypi] . You'll also need the [Pyramid framework] [pyramid].  For simple setups you can likely get away with the usual:
+    $ virtualenv env
+    $ source env/bin/activate
+    $ pip install scrypt pyramid
 
-    $> python setup.py install
+Clone the `scrypt-helper` repo in the `env` directory. In `scrypt-helper`:
 
-[pypi]: https://pypi.python.org/pypi/scrypt/0.6.1
-[pyramid]: https://pypi.python.org/pypi/pyramid
+    $ python setup.py install
+
+You can deactivate the virtual environment with `deactivate`.
 
 ## Running
 
-Run a simple testing server like so:
+    $ python scrypt_helper/run.py
 
-    $ python ./scrypt_helper/run.py
-
-Then make an http POST with a JSON body of the form:
+Then make an HTTP POST with a JSON body of the form:
 
     '{
      "input": <your password to scrypt, in hex>,
