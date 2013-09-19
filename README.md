@@ -23,6 +23,12 @@ Clone the `scrypt-helper` repo in the `env` directory. In `scrypt-helper`:
 
 You can deactivate the virtual environment with `deactivate`.
 
+## Testing
+
+With the virtual environment activated, run this:
+
+    $ python setup.py test
+
 ## Running
 
     $ python scrypt_helper/run.py
