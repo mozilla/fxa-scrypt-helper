@@ -43,9 +43,11 @@ class TestInputValidation(unittest.TestCase):
             "input": "f84913e3d8e6d624689d0a3e9678ac8dcc79d2c2f3d9641488cd9d6ef6cd83dd"
 }
         body = json.dumps(request_body)
-        request = testing.DummyRequest(post=body)
+        request = testing.DummyRequest()
+        request.method = "POST"
+        request.body = body
         response = S.do_scrypt(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response)
         result = json.loads(response.body)
         self.assertEqual(
             result.get('output'),
