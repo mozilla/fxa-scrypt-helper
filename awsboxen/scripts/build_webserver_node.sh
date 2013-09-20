@@ -23,11 +23,11 @@ rm -rf identity-pubkeys
 
 python-pip install virtualenv
 
-useradd scrypthelper
+useradd app
 
-UDO="sudo -u scrypthelper"
+UDO="sudo -u app"
 
-cd /home/scrypthelper
+cd /home/app
 $UDO git clone https://github.com/mozilla/scrypt-helper.git
 cd ./scrypt-helper
 git checkout {"Ref": "AWSBoxenCommit"}
@@ -45,28 +45,28 @@ $UDO ./local/bin/pip install gunicorn
 cd ../
 cat > circus.ini << EOF
 [watcher:scrypthelper]
-working_dir=/home/scrypthelper/scrypt-helper
+working_dir=/home/app/scrypt-helper
 cmd=local/bin/gunicorn -w 4 scrypt_helper.run
 numprocesses = 1
 stdout_stream.class = FileStream
-stdout_stream.filename = /home/scrypthelper/circus.stdout.log
+stdout_stream.filename = /home/app/scrypt-helper/circus.stdout.log
 stdout_stream.refresh_time = 0.5
 stdout_stream.max_bytes = 1073741824
 stdout_stream.backup_count = 3
 stderr_stream.class = FileStream
-stderr_stream.filename = /home/scrypthelper/circus.stderr.log
+stderr_stream.filename = /home/app/scrypt-helper/circus.stderr.log
 stderr_stream.refresh_time = 0.5
 stderr_stream.max_bytes = 1073741824
 stderr_stream.backup_count = 3
 EOF
-chown scrypthelper:scrypthelper circus.ini
+chown app:app circus.ini
 
 # Launch the server via circus on startup.
 
 python-pip install circus
 
 cat > /etc/rc.local << EOF
-su -l scrypthelper -c '/usr/bin/circusd --daemon /home/scrypthelper/circus.ini'
+su -l app -c '/usr/bin/circusd --daemon /home/app/circus.ini'
 exit 0
 EOF
 
@@ -117,3 +117,103 @@ EOF
 
 /sbin/chkconfig nginx on
 /sbin/service nginx start
+
+
+# Install heka, have it send logfiles through to aggregator box.
+
+HEKAFILE=heka-0_4_0-picl-idp-amd64.tar.gz
+cd /opt
+wget https://people.mozilla.com/~rmiller/heka/$HEKAFILE
+tar -xzvf $HEKAFILE
+rm -f $HEKAFILE
+
+cd /home/app
+mkdir ./hekad
+chown app:app ./hekad
+
+# Set some basic heka configuration.
+
+cat > ./hekad/hekad.toml << EOF
+[hekad]
+base_dir = "/home/app/hekad"
+
+[debug]
+type = "FileOutput"
+message_matcher = "TRUE"
+path = "/home/app/hekad/hekad.log"
+format = "json"
+
+
+[app-error-log]
+type = "LogfileInput"
+logfile = "/home/app/scrypt-helper/circus.stderr.log"
+decoders = ["app-error-decoder"]
+
+[app-error-decoder]
+type = "PayloadRegexDecoder"
+timestamp_layout = "02/Jan/2006:15:04:05 -0700"
+match_regex = '^(?P<Message>.+)'
+
+[app-error-decoder.message_fields]
+Type = "logfile"
+Logger = "app"
+App = "scrypt-helper"
+Message = "%Message%"
+
+
+
+[nginx-access-log]
+type = "LogfileInput"
+logfile = "/var/log/nginx/access.log"
+decoders = ["nginx-log-decoder"]
+
+[nginx-log-decoder]
+type = "PayloadRegexDecoder"
+timestamp_layout = "02/Jan/2006:15:04:05 -0700"
+match_regex = '^(?P<RemoteIP>\S+) \S+ \S+ \[(?P<Timestamp>[^\]]+)\] "(?P<Method>[A-Z\-]+) (?P<Url>[^\s]+)[^"]*" (?P<StatusCode>\d+) (?P<RequestSize>\d+) "(?P<Referer>[^"]*)" "(?P<Browser>[^"]*)" XFF="(?P<XFF>[^"]+)" TIME=(?P<Time>\S+)'
+
+[nginx-log-decoder.message_fields]
+Type = "logfile"
+Logger = "nginx"
+App = "scrypt-helper"
+Url|uri = "%Url%"
+Method = "%Method%"
+Status = "%StatusCode%"
+RequestSize|B = "%RequestSize%"
+Referer = "%Referer%"
+Browser = "%Browser%"
+RequestTime = "%Time%"
+XForwardedFor = "%XFF%"
+
+[aggregator-output]
+type = "AMQPOutput"
+message_matcher = "TRUE"
+url = "amqp://heka:{"Ref":"AMQPPassword"}@logs.{"Ref":"DNSPrefix"}.lcip.org:5672/"
+exchange = "heka"
+exchangeType = "fanout"
+EOF
+
+chown app:app hekad/hekad.toml
+
+chmod +r /var/log/nginx
+chmod +x /var/log/nginx
+chmod +r /var/log/nginx/access.log
+
+cat >> circus.ini << EOF
+
+[watcher:hekad]
+working_dir=/home/app/hekad
+cmd=/opt/heka-0_4_0-linux-amd64/bin/hekad -config=/home/app/hekad/hekad.toml
+numprocesses = 1
+stdout_stream.class = FileStream
+stdout_stream.filename = /home/app/hekad/circus.stdout.log
+stdout_stream.refresh_time = 0.5
+stdout_stream.max_bytes = 1073741824
+stdout_stream.backup_count = 3
+stderr_stream.class = FileStream
+stderr_stream.filename = /home/app/hekad/circus.stderr.log
+stderr_stream.refresh_time = 0.5
+stderr_stream.max_bytes = 1073741824
+stderr_stream.backup_count = 3
+
+EOF
