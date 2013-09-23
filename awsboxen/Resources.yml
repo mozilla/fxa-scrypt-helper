@@ -49,32 +49,7 @@ WebLaunchConfig:
     ImageId: {"Ref": "WebServerAMI"}  # this comes from Boxen[WebServer]
     KeyName: {"Ref": "AWSBoxDeployKey"}
     SecurityGroups:
-      - {"Ref": "WebSecurityGroup"}
-
-WebSecurityGroup:
-  Type: AWS::EC2::SecurityGroup
-  Properties:
-    GroupDescription:  awsboxen security group for scrypt-helper webheads
-    SecurityGroupIngress:
-      # Allow ssh from anywhere
-      - IpProtocol: "tcp"
-        FromPort: "22"
-        ToPort: "22"
-        CidrIp: "0.0.0.0/0"
-
-WebSecurityGroupLBIngress:
-  # Allow port 80 ingress from the load balancer.
-  # This has to be a separate resources to avoid circular references
-  # between the LoadBalancer and the LaunchConfig.
-  Type: AWS::EC2::SecurityGroupIngress
-  Properties:
-    GroupName: {"Ref": "WebSecurityGroup"}
-    IpProtocol: "tcp"
-    FromPort: "80"
-    ToPort: "80"
-    SourceSecurityGroupOwnerId: {"Fn::GetAtt": ["WebLoadBalancer", "SourceSecurityGroup.OwnerAlias"]}
-    SourceSecurityGroupName: {"Fn::GetAtt": ["WebLoadBalancer", "SourceSecurityGroup.GroupName"]}
-
+      - "awsbox group v1"
 
 # DNS Records to point the public at the load-balancer.
 
