@@ -73,6 +73,7 @@ EOF
 
 cd ./scrypt-helper
 $UDO git log --pretty=oneline -1 > ../ver.txt
+chown app:app ../ver.txt
 chmod +x /home/app
 cd ../
 
@@ -226,3 +227,31 @@ stderr_stream.max_bytes = 1073741824
 stderr_stream.backup_count = 3
 
 EOF
+
+
+# Have the server auto-update to latest master via a cronjob.
+
+cat >> /home/app/auto_update.sh << EOF
+#!/bin/sh
+
+set -e
+
+CURCOMMIT="git log --pretty=%h -1"
+
+cd /home/app/scrypt-helper
+git fetch origin
+
+date > /home/app/LAST_AUTO_UPDATE.txt
+
+if [ `$CURCOMMIT master` != `$CURCOMMIT origin/master` ]; then
+  git pull
+  git log --pretty=oneline -1 > ../ver.txt
+  circusctl restart
+fi
+
+EOF
+
+chmod +r /home/app/auto_update.sh
+chmod +x /home/app/auto_update.sh
+
+echo "*/5 * * * * /bin/bash -l /home/app/auto_update.sh > /dev/null 2> /dev/null" | sudo crontab -u app -
