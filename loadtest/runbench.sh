@@ -12,7 +12,7 @@ SSH="ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 $SSH -N -L 7776:$BROKER:7776 -L 7780:$BROKER:7780 ec2-user@$BROKER &
 SSH_PID=$!
 
-./bin/loads-runner --users=10 --duration=240 --broker=tcp://localhost:7780 --zmq-publisher=tcp://localhost:7776 --agents=3 --include-file=stress.py --python-dep=scrypt stress.StressTest.test_scrypt_helper
+./bin/loads-runner --users=10 --duration=240 --broker=tcp://localhost:7780 --zmq-publisher=tcp://localhost:7776 --agents=4 --include-file=stress.py --python-dep=scrypt stress.StressTest.test_scrypt_helper
 
 kill $SSH_PID
 
