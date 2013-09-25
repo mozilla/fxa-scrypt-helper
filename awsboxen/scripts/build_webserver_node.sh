@@ -243,7 +243,7 @@ git fetch origin
 
 date > /home/app/LAST_AUTO_UPDATE.txt
 
-if [ `$CURCOMMIT master` != `$CURCOMMIT origin/master` ]; then
+if [ \`\$CURCOMMIT master\` != \`\$CURCOMMIT origin/master\` ]; then
   git pull
   git log --pretty=oneline -1 > ../ver.txt
   circusctl restart
