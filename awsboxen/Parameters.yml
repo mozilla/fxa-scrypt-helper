@@ -1,5 +1,5 @@
 ClusterSize:
-  Default: "1"
+  Default: "2"
   Type: "String"
   Description: "Number of nodes in the auto-scale cluster"
 DNSPrefix:

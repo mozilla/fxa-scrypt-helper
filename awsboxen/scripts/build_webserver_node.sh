@@ -19,7 +19,7 @@ cat *.pub >> /home/ec2-user/.ssh/authorized_keys
 cd ..
 rm -rf identity-pubkeys
 
-# Checkout and build the active commit of scrypt-helper.
+# Checkout and build scrypt-helper master branch.
 
 python-pip install virtualenv
 
@@ -30,7 +30,6 @@ UDO="sudo -u app"
 cd /home/app
 $UDO git clone https://github.com/mozilla/scrypt-helper.git
 cd ./scrypt-helper
-git checkout {"Ref": "AWSBoxenCommit"}
 
 # Build a virtualenv with all the dependencies.
 
@@ -70,6 +69,13 @@ su -l app -c '/usr/bin/circusd --daemon /home/app/circus.ini'
 exit 0
 EOF
 
+# Write ver.txt for easy checking of current dev version.
+
+cd ./scrypt-helper
+$UDO git log --pretty=oneline -1 > ../ver.txt
+chmod +x /home/app
+cd ../
+
 # Setup nginx as proxy.
 
 $YUM install nginx
@@ -90,6 +96,9 @@ http {
     access_log /var/log/nginx/access.log xff;
     server {
         listen       80 default;
+        location /ver.txt {
+            alias /home/app/ver.txt;
+        }
         location / {
             if (\$request_method = 'OPTIONS') {
                 add_header 'Access-Control-Allow-Origin' '*';
