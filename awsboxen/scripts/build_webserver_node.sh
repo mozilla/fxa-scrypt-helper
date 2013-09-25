@@ -19,7 +19,7 @@ cat *.pub >> /home/ec2-user/.ssh/authorized_keys
 cd ..
 rm -rf identity-pubkeys
 
-# Checkout and build the active commit of scrypt-helper.
+# Checkout and build scrypt-helper master branch.
 
 python-pip install virtualenv
 
@@ -30,7 +30,6 @@ UDO="sudo -u app"
 cd /home/app
 $UDO git clone https://github.com/mozilla/scrypt-helper.git
 cd ./scrypt-helper
-git checkout {"Ref": "AWSBoxenCommit"}
 
 # Build a virtualenv with all the dependencies.
 
@@ -70,6 +69,14 @@ su -l app -c '/usr/bin/circusd --daemon /home/app/circus.ini'
 exit 0
 EOF
 
+# Write ver.txt for easy checking of current dev version.
+
+cd ./scrypt-helper
+$UDO git log --pretty=oneline -1 > ../ver.txt
+chown app:app ../ver.txt
+chmod +x /home/app
+cd ../
+
 # Setup nginx as proxy.
 
 $YUM install nginx
@@ -90,6 +97,9 @@ http {
     access_log /var/log/nginx/access.log xff;
     server {
         listen       80 default;
+        location /ver.txt {
+            alias /home/app/ver.txt;
+        }
         location / {
             if (\$request_method = 'OPTIONS') {
                 add_header 'Access-Control-Allow-Origin' '*';
@@ -217,3 +227,31 @@ stderr_stream.max_bytes = 1073741824
 stderr_stream.backup_count = 3
 
 EOF
+
+
+# Have the server auto-update to latest master via a cronjob.
+
+cat >> /home/app/auto_update.sh << EOF
+#!/bin/sh
+
+set -e
+
+CURCOMMIT="git log --pretty=%h -1"
+
+cd /home/app/scrypt-helper
+git fetch origin
+
+date > /home/app/LAST_AUTO_UPDATE.txt
+
+if [ \`\$CURCOMMIT master\` != \`\$CURCOMMIT origin/master\` ]; then
+  git pull
+  git log --pretty=oneline -1 > ../ver.txt
+  circusctl restart
+fi
+
+EOF
+
+chmod +r /home/app/auto_update.sh
+chmod +x /home/app/auto_update.sh
+
+echo "*/5 * * * * /bin/bash -l /home/app/auto_update.sh > /dev/null 2> /dev/null" | sudo crontab -u app -
