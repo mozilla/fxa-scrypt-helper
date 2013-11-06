@@ -8,3 +8,9 @@ loadtest/bin
 loadtest/lib
 loadtest/include
 loadtest/local
+
+# VirtualEnv Ignore
+.Python
+bin/
+include/
+lib/
