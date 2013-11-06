@@ -52,6 +52,16 @@ which will return:
 
     {"output": "return-value-from-scrypt-algorithm, also in hex"}
 
+## Testing with curl 
+
+    curl -X POST -H "Content-Type: application/json" \
+        -d '{"input": "ABCDEF0123", "salt":"identity.mozilla.com/picl/v1/scrypt", "N": 65536, "r":8, "p":1, "buflen":32}' \
+        http://localhost:8080; echo    
+
+Output:
+
+    {"output": "8158f3aae9044369c4c6ba5eda6f679cca8adc1186eb29637a75c9e4b4b940f1"}
+
 (Note that all of the inputs to scrypt except the password are hard-coded; you must modify validate_parameters in server.py if you wish to change any of them.)
 
 
