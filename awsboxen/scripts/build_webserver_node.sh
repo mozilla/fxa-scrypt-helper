@@ -229,7 +229,10 @@ stderr_stream.backup_count = 3
 EOF
 
 
-# Have the server auto-update to latest master via a cronjob.
+# Stub out a cronjob to auto-update to latest master.
+# It's not active by default; to enable it do:
+#
+#   echo "*/5 * * * * /bin/bash -l /home/app/auto_update.sh > /dev/null 2> /dev/null" | sudo crontab -u app -
 
 cat >> /home/app/auto_update.sh << EOF
 #!/bin/sh
@@ -253,5 +256,3 @@ EOF
 
 chmod +r /home/app/auto_update.sh
 chmod +x /home/app/auto_update.sh
-
-echo "*/5 * * * * /bin/bash -l /home/app/auto_update.sh > /dev/null 2> /dev/null" | sudo crontab -u app -
