@@ -70,7 +70,7 @@ Output:
 There is a development instance of this service running in the moz-svc-dev
 AWS environment, and available for testing at:
 
-    http://scrypt.dev.lcip.org
+    https://scrypt-accounts.dev.lcip.org
 
 This deployment is managed using [awsboxen].  To push a new version of the
 code, simply do:
