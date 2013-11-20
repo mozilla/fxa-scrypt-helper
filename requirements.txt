@@ -6,7 +6,6 @@ WebOb==1.2.3
 pyramid==1.4.5
 repoze.lru==0.6
 scrypt==0.6.1
-scrypt-helper==0.1
 translationstring==1.1
 venusian==1.0a8
 wsgiref==0.1.2
