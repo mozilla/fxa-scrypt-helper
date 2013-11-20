@@ -59,7 +59,7 @@ DNSRecords:
     Comment: awsboxen dns records for scrypt-helper
     HostedZoneName: lcip.org.
     RecordSets:
-      - Name: {"Fn::Join": ["", ["scrypt-accounts.",{"Ref": "DNSPrefix"},".lcip.org."]]}
+      - Name: {"Fn::Join": ["", [{"Ref": "DNSName"},".",{"Ref": "DNSPrefix"},".lcip.org."]]}
         Type: "CNAME"
         TTL: 30
         ResourceRecords:

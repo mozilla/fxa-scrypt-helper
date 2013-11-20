@@ -5,7 +5,11 @@ ClusterSize:
 DNSPrefix:
   Default: "dev"
   Type: "String"
-  Description: "prefix for dns name, to avoid conflicts"
+  Description: "prefix for dns domain, to avoid conflicts"
+DNSName:
+  Default: "scrypt-accounts"
+  Type: "String"
+  Description: "server name to use in dns name, to avoid conflicts"
 AMQPPassword:
   Default: "guest"
   Type: "String"
