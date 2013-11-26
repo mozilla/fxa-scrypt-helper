@@ -131,9 +131,10 @@ EOF
 
 # Install heka, have it send logfiles through to aggregator box.
 
-HEKAFILE=heka-0_4_0-picl-idp-amd64.tar.gz
+HEKAURL=https://github.com/mozilla-services/heka/releases/download/v0.4.1/heka-0_4_1-linux-amd64.tar.gz
+HEKAFILE=`basename $HEKAURL`
 cd /opt
-wget https://people.mozilla.com/~rmiller/heka/$HEKAFILE
+wget $HEKAURL
 tar -xzvf $HEKAFILE
 rm -f $HEKAFILE
 
@@ -157,7 +158,7 @@ format = "json"
 [app-error-log]
 type = "LogfileInput"
 logfile = "/home/app/scrypt-helper/circus.stderr.log"
-decoders = ["app-error-decoder"]
+decoder = "app-error-decoder"
 
 [app-error-decoder]
 type = "PayloadRegexDecoder"
@@ -175,7 +176,7 @@ Message = "%Message%"
 [nginx-access-log]
 type = "LogfileInput"
 logfile = "/var/log/nginx/access.log"
-decoders = ["nginx-log-decoder"]
+decoder = "nginx-log-decoder"
 
 [nginx-log-decoder]
 type = "PayloadRegexDecoder"
@@ -213,7 +214,7 @@ cat >> circus.ini << EOF
 
 [watcher:hekad]
 working_dir=/home/app/hekad
-cmd=/opt/heka-0_4_0-linux-amd64/bin/hekad -config=/home/app/hekad/hekad.toml
+cmd=/opt/heka-0_4_1-linux-amd64/bin/hekad -config=/home/app/hekad/hekad.toml
 numprocesses = 1
 stdout_stream.class = FileStream
 stdout_stream.filename = /home/app/hekad/circus.stdout.log
